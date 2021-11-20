@@ -1,32 +1,48 @@
-import { Box, Stack, Text, Link, Icon } from "@chakra-ui/react";
-import { RiFileChartLine , RiCurrencyLine, RiDashboardLine, RiListCheck2 } from "react-icons/ri";
-import { NavSection } from "./NavSection";
-import { NavLink } from "./NavLink";
+import { 
+  Box, 
+  Drawer, 
+  DrawerOverlay, 
+  DrawerContent, 
+  DrawerCloseButton, 
+  DrawerHeader,
+  DrawerBody,
+  useBreakpointValue
+} from "@chakra-ui/react";
+import { useSideBarDrawer } from "../../contexts/SidebarDrawerContext";
+import { SideBarNav } from "./SideBarNav";
 
 // Fechamentos - RiFileChartLine
 // Simples Nacional - RiListCheck2
 // Tabelas IRRF - RiListCheck2
 // Tabelas INSS - RiListCheck2
 export function SideBar(){
+
+  const {isOpen, onClose} = useSideBarDrawer()
+
+  const isDrawerSideBar = useBreakpointValue({
+    base: true,
+    lg: false,
+  })
+
+  if (isDrawerSideBar) {
+    return (
+      <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
+        <DrawerOverlay>
+          <DrawerContent bg="gray.800" p="4">
+            <DrawerCloseButton mt="6"/>
+            <DrawerHeader>Navegação</DrawerHeader>
+            <DrawerBody>
+              <SideBarNav/>
+            </DrawerBody>
+          </DrawerContent>
+        </DrawerOverlay>
+      </Drawer>
+    );
+  }
+
   return (
-    <Box
-      as="aside"
-      w="64"
-      mr="8"
-    >
-      <Stack
-        spacing="12"
-        align="flex-start"
-      >
-        <NavSection title="GERAL">
-          <NavLink icon={RiDashboardLine}>Dashboard</NavLink>
-          <NavLink icon={RiCurrencyLine}>Faturamentos</NavLink>
-          <NavLink icon={RiFileChartLine}>Fechamentos</NavLink>
-          <NavLink icon={RiListCheck2}>Tabelas Simples Nacional</NavLink>
-          <NavLink icon={RiListCheck2}>Tabelas IRRF</NavLink>
-          <NavLink icon={RiListCheck2}>Tabelas INSS</NavLink>
-        </NavSection>
-      </Stack>
+    <Box as="aside" w="64" mr="8">
+      <SideBarNav />
     </Box>
   );
 }
