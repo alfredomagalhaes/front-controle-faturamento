@@ -15,6 +15,7 @@ import {
 
 } from "@chakra-ui/react";
 import { RiAddLine, RiPencilLine } from "react-icons/ri";
+import Link from 'next/link';
 import { Header } from "../../components/Header";
 import { Pagination } from "../../components/Pagination";
 import { SideBar } from "../../components/Sidebar";
@@ -44,15 +45,18 @@ export default function ListIncomes(){
             align="center"
           >
             <Heading size="lg" fontWeight="normal" >Faturamentos</Heading>
-            <Button 
-              as="a" 
-              size="sm" 
-              fontSize="md" 
-              colorScheme="pink"
-              leftIcon={<Icon as={RiAddLine}/>}
-            >
-              Criar Novo
-            </Button>
+            <Link href="/incomes/create" passHref>
+              <Button 
+                as="a" 
+                size="sm" 
+                fontSize="md" 
+                colorScheme="pink"
+                leftIcon={<Icon as={RiAddLine}/>}
+              >
+                Criar Novo
+              </Button>
+            </Link>
+
           </Flex>
 
           <Table colorScheme="whiteAlpha">

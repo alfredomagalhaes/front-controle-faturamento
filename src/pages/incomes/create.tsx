@@ -9,11 +9,39 @@ import {
   Button,
 
 } from "@chakra-ui/react";
+import Link from 'next/link';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { Input } from "../../components/Form/Input";
 import { Header } from "../../components/Header";
 import { SideBar } from "../../components/Sidebar";
 
+type CreateIncomeFormData = {
+  reference: string;
+  value: number;
+};
+
+const createIncomeFormSchema = yup.object({
+  reference: yup.string().required('Período obrigatório'),
+  value: yup.number(),
+})
+
+
+
 export default function CreateIncome(){
+  const { register, handleSubmit, formState } = useForm({
+    resolver: yupResolver(createIncomeFormSchema)
+  })
+
+  const errors = formState.errors;
+
+  const handleCreateIncome: SubmitHandler<CreateIncomeFormData> = async (values) =>{
+    await new Promise(resolve => setTimeout(resolve,2000));
+    
+    console.log(values);
+
+  }
   return (
     <Box>
       <Header />
@@ -27,10 +55,12 @@ export default function CreateIncome(){
       >
         <SideBar />
         <Box
+          as="form"
           flex="1"
           borderRadius={8}
           bg="gray.800"
           p={["6","8"]}
+          onSubmit={handleSubmit(handleCreateIncome)}
         >
           <Heading size="lg" fontWeight="normal">Adicionar Faturamento</Heading>
           <Divider my="6" borderColor="gray.700" />
@@ -41,19 +71,37 @@ export default function CreateIncome(){
               spacing={["6","8"]}
               w="100%"
             >
-              <Input name="reference" type="date" label="Referência"/>
-              <Input name="value" label="Valor faturado"/>
+              <Input 
+                name="reference" 
+                type="date" 
+                label="Referência" 
+                {...register('reference')}
+                error={errors.reference}
+              />
+              <Input 
+                name="value" 
+                label="Valor faturado" 
+                error={errors.value}
+                {...register('value')}
+              />
             </SimpleGrid>
 
           </VStack>
           <Flex mt="8" justify="flex-end">
             <HStack spacing="4">
-              <Button colorScheme="whiteAlpha" size="sm">Cancelar</Button>
-              <Button colorScheme="pink" size="sm">Salvar</Button>
+              <Link href="/incomes" passHref>
+                <Button as="a" colorScheme="whiteAlpha" size="sm">Cancelar</Button>
+              </Link>
+              <Button 
+                type="submit" 
+                colorScheme="pink" 
+                size="sm"
+                isLoading={formState.isSubmitting}
+              >
+                Salvar
+              </Button>
             </HStack>
-          </Flex>
-
-          
+          </Flex>  
         </Box>
       </Flex>
     </Box>
