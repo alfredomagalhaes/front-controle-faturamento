@@ -10,12 +10,18 @@ import {
 
 } from "@chakra-ui/react";
 import Link from 'next/link';
+import { useRouter } from "next/router";
 import { SubmitHandler, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
+import { useMutation } from 'react-query';
+
 import { Input } from "../../components/Form/Input";
 import { Header } from "../../components/Header";
 import { SideBar } from "../../components/Sidebar";
+import api from "../../services/api";
+import { queryClient } from "../../services/queryClient";
+
 
 type CreateIncomeFormData = {
   reference: string;
@@ -30,6 +36,21 @@ const createIncomeFormSchema = yup.object({
 
 
 export default function CreateIncome(){
+
+  const router = useRouter();
+  const createIncome = useMutation(async (income: CreateIncomeFormData ) => {
+    const response = await api.post("faturamento",{
+      referencia: income.reference.replaceAll("-","").substr(0,6),
+      valor_faturado: income.value,
+    })
+
+    return response.data;
+  }, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('incomes-list')
+    }
+  });
+
   const { register, handleSubmit, formState } = useForm({
     resolver: yupResolver(createIncomeFormSchema)
   })
@@ -37,11 +58,10 @@ export default function CreateIncome(){
   const errors = formState.errors;
 
   const handleCreateIncome: SubmitHandler<CreateIncomeFormData> = async (values) =>{
-    await new Promise(resolve => setTimeout(resolve,2000));
-    
-    console.log(values);
-
+    await createIncome.mutateAsync(values);
+    router.push("/incomes")
   }
+
   return (
     <Box>
       <Header />

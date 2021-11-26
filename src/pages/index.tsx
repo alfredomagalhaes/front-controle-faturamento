@@ -6,7 +6,7 @@ import {
 import { SubmitHandler, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
-import { useQuery } from 'react-query';
+import { useRouter } from "next/router";
 
 import { Input } from '../components/Form/Input'
 import api from "../services/api";
@@ -24,6 +24,8 @@ const signInFormSchema = yup.object({
 })
 
 export default function SignIn() {
+  const router = useRouter();
+
   const {register, handleSubmit, formState} = useForm({
     resolver: yupResolver(signInFormSchema)
   })
@@ -37,7 +39,7 @@ export default function SignIn() {
       .then(response => {
         console.log(response);
         login(response.data.token);
-        //this.props.history.push("/dashboard");
+        router.push("/dashboard");
       })
       .catch(error => console.log(error));
 
