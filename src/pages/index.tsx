@@ -6,8 +6,11 @@ import {
 import { SubmitHandler, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
+import { useQuery } from 'react-query';
 
 import { Input } from '../components/Form/Input'
+import api from "../services/api";
+import { login } from "../services/auth";
 
 
 type SignInFormData = {
@@ -28,8 +31,16 @@ export default function SignIn() {
   const errors = formState.errors;
 
   const handleSignIn: SubmitHandler<SignInFormData> = async (values) => {
-    await new Promise(resolve => setTimeout(resolve,2000));
-    
+    //await new Promise(resolve => setTimeout(resolve,2000));
+
+    await api.post("/login", { email: values.email, password: values.password })
+      .then(response => {
+        console.log(response);
+        login(response.data.token);
+        //this.props.history.push("/dashboard");
+      })
+      .catch(error => console.log(error));
+
     console.log(values);
 
   }
