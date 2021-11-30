@@ -7,10 +7,12 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { useRouter } from "next/router";
+import { useContext } from 'react'
 
 import { Input } from '../components/Form/Input'
 import api from "../services/api";
 import { login } from "../services/auth";
+import { AuthContext } from '../contexts/AuthContext';
 
 
 type SignInFormData = {
@@ -24,6 +26,9 @@ const signInFormSchema = yup.object({
 })
 
 export default function SignIn() {
+  
+  const { signIn } = useContext(AuthContext);
+
   const router = useRouter();
 
   const {register, handleSubmit, formState} = useForm({
@@ -62,7 +67,7 @@ export default function SignIn() {
         p="8"
         borderRadius={8}
         flexDir="column"
-        onSubmit={handleSubmit(handleSignIn)}
+        onSubmit={handleSubmit(signIn)}
       >
         <Stack spacing="4">           
           <Input
