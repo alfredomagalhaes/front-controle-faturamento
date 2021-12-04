@@ -7,11 +7,12 @@ const api = axios.create({
   headers: {'Access-Control-Allow-Origin': '*'}
 });
 
-let cookies = parseCookies();
+
 let isRefreshing = false ;
 let failedRequestsQueu = [];
 
 api.interceptors.request.use(async config => {
+  let cookies = parseCookies();
 
   if (cookies['ctrlfin.token']) {
     config.headers.Authorization = `Bearer ${cookies['ctrlfin.token']}`;
@@ -24,6 +25,8 @@ api.interceptors.response.use(response => {
   return response;
 }, (error: AxiosError) => {
   if (error.response.status === 401) {
+    let cookies = parseCookies();
+    
     if (error.response.data?.code === 'token.expired') {
       //Renovar o token
       cookies = parseCookies();
