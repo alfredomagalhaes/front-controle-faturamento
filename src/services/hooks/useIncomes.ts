@@ -18,7 +18,7 @@ export async function getIncomes(page: number): Promise<GetIncomesResponse>{
       params:{
         pagina: page,
       }
-    })
+    });
     
     const incomes = data.data.data.map(income => {
       return {
@@ -34,6 +34,29 @@ export async function getIncomes(page: number): Promise<GetIncomesResponse>{
       incomes,
       totalCount
      };
+}
+
+export async function getIncome(id: string): Promise<Income>{
+  
+  const respApi = await api.get("/faturamento/"+id);
+  const income = {
+    id: "",
+    reference: "",
+    value: 0
+  }
+  if (respApi.data.hasOwnProperty('data') ) {
+
+    const income = {
+      id: respApi.data.data.id,
+      reference: respApi.data.data.referencia,
+      value: respApi.data.data.valor_faturado
+    }
+    
+    return income
+
+  }
+  
+  return income
 }
 
 export function useIncomes(page: number){

@@ -9,6 +9,7 @@ import {
   Button,
 
 } from "@chakra-ui/react";
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from "next/router";
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -16,11 +17,12 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup/dist/yup';
 import { useMutation } from 'react-query';
 
-import { Input } from "../../components/Form/Input";
-import { Header } from "../../components/Header";
-import { SideBar } from "../../components/Sidebar";
-import api from "../../services/api";
-import { queryClient } from "../../services/queryClient";
+import { Input } from "../../../components/Form/Input";
+import { Header } from "../../../components/Header";
+import { SideBar } from "../../../components/Sidebar";
+import api from "../../../services/api";
+import { queryClient } from "../../../services/queryClient";
+import { getIncome } from "../../../services/hooks/useIncomes";
 
 
 type UpdateIncomeFormData = {
@@ -33,13 +35,23 @@ const updateIncomeFormSchema = yup.object({
   value: yup.number(),
 })
 
+const getIdByUrl = (url: string) => {
+  const paths = url.split("/");
+
+  return paths[paths.length-1];
+}
+
 
 
 export default function UpdateIncome(){
 
   const router = useRouter();
+  const urlParam = router.asPath;
+  const id = getIdByUrl(urlParam);
+  
+  const incomeReq = getIncome(id);
   const updateIncome = useMutation(async (income: UpdateIncomeFormData ) => {
-    const response = await api.post("faturamento",{
+    const response = await api.put("faturamento/"+id,{
       referencia: income.reference.replaceAll("-","").substr(0,6),
       valor_faturado: income.value,
     })
@@ -51,11 +63,23 @@ export default function UpdateIncome(){
     }
   });
 
-  const { register, handleSubmit, formState } = useForm({
-    resolver: yupResolver(updateIncomeFormSchema)
+  const { register, handleSubmit, formState, setValue } = useForm({
+    resolver: yupResolver(updateIncomeFormSchema),
+    defaultValues: { reference: "", value: 0},
   })
 
   const errors = formState.errors;
+
+  useEffect(() => {    
+    incomeReq.then(resp => {
+      const refFormatted = resp.reference.substring(0,4) + "-" +
+        resp.reference.substring(4,6) + "-" + "01"
+
+      setValue("reference", refFormatted);
+      setValue("value", resp.value);
+    })
+
+  }, [router.asPath])
 
   const handleUpdateIncome: SubmitHandler<UpdateIncomeFormData> = async (values) =>{
     await updateIncome.mutateAsync(values);

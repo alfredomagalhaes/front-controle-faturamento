@@ -107,15 +107,17 @@ export default function ListIncomes(){
                           R$ {income.value}
                         </Td>
                         <Td>
-                          <Button 
-                            as="a" 
-                            size="sm" 
-                            fontSize="sm" 
-                            colorScheme="pink"
-                            leftIcon={<Icon as={RiPencilLine} fontSize="16"/>}
-                          >
-                            Editar
-                          </Button>
+                          <Link href={"/incomes/update/"+income.id} passHref>
+                            <Button 
+                              as="a" 
+                              size="sm" 
+                              fontSize="sm" 
+                              colorScheme="pink"
+                              leftIcon={<Icon as={RiPencilLine} fontSize="16"/>}
+                            >
+                              Editar
+                            </Button>
+                          </Link>
                         </Td>
                       </Tr>
 
